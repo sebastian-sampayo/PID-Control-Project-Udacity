@@ -4,6 +4,9 @@
 #include "PID.h"
 #include <math.h>
 
+// DEBUG
+#define DEBUG
+
 // for convenience
 using json = nlohmann::json;
 
@@ -32,10 +35,28 @@ int main()
 {
   uWS::Hub h;
 
+  // PID for steering angle
   PID pid;
-  // TODO: Initialize the pid variable.
+  // Initialize the pid variable.
+  const double Kp = .25;
+  const double Kd = 10;
+  const double Ki = .0001;
+  
+  pid.Init(Kp, Ki, Kd);
+  
+  // PID for throttle
+  PID pid2;
+  // Initialize the pid variable.
+  const double Kp2 = .2;
+  const double Kd2 = 9;
+  const double Ki2 = .0005;
+  
+  pid2.Init(Kp2, Ki2, Kd2);
+  
+  // A flag for differential CTE initialization
+  bool is_initialized = false;
 
-  h.onMessage([&pid](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, uWS::OpCode opCode) {
+  h.onMessage([&pid, &pid2, &is_initialized](uWS::WebSocket<uWS::SERVER> ws, char *data, size_t length, uWS::OpCode opCode) {
     // "42" at the start of the message means there's a websocket message event.
     // The 4 signifies a websocket message
     // The 2 signifies a websocket event
@@ -58,14 +79,46 @@ int main()
           * another PID controller to control the speed!
           */
           
-          // DEBUG
-          std::cout << "CTE: " << cte << " Steering Value: " << steer_value << std::endl;
+          // Speed PID
+          const double REF_SPEED = 30; // Reference speed
+          double speed_err = speed - REF_SPEED; // Speed error
+          double throttle_value; // Control force for speed
+          
+          if (!is_initialized)
+          {
+            pid.d_error_ = cte;
+            pid2.d_error_ = speed_err;
+            is_initialized = true;
+            std::cout << "d_error_ init!" << std::endl;
+          }
+          
+          pid.UpdateError(cte);
+          steer_value = pid.TotalError();
 
+          pid2.UpdateError(speed_err);
+          // throttle_value = 0.3;
+          throttle_value = pid2.TotalError();
+          
+          // DEBUG
+          #ifdef DEBUG
+          std::cout << "CTE: " << cte << " | " 
+                    << "Steering Value: " << steer_value << " | " 
+                    << "Measured angle: " << angle << " | " 
+                    << "Measured speed: " << speed << " | " 
+                    << std::endl
+                    << "pid.p_error_: " << pid.p_error_ << " | " 
+                    << "pid.d_error_: " << pid.d_error_ << " | " 
+                    << "pid.i_error_: " << pid.i_error_ << " | " 
+                    << std::endl;
+          #endif
+          
           json msgJson;
           msgJson["steering_angle"] = steer_value;
-          msgJson["throttle"] = 0.3;
+          msgJson["throttle"] = throttle_value;
           auto msg = "42[\"steer\"," + msgJson.dump() + "]";
+          #ifdef DEBUG
           std::cout << msg << std::endl;
+          #endif
           ws.send(msg.data(), msg.length(), uWS::OpCode::TEXT);
         }
       } else {
