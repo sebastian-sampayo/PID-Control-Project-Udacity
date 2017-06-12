@@ -27,9 +27,12 @@ In order to test the controller I used a visualization tool provided by Udacity 
 
 ### Implementation
 
-For the purpose of the project I implemented a PID controller to calculate the steering angle to keep the CTE as low as possible. The proportional part of the control law make the vehicle turns when it is away from the center of the road. The derivative term provides a better damping so it steers gracefully. Finally, the integral term helps to reduce the steady state error of the system. However, as the CTE measurement is not really noise in this example, this last term isn't very usefull.
+For the purpose of the project I implemented a PID controller to calculate the steering angle to keep the CTE as low as possible. The proportional part of the control law make the vehicle turns when it is away from the center of the road. The derivative term provides a better damping so it steers gracefully. Finally, the integral term helps to reduce the steady state error of the system. However, as the CTE measurement is not really noise in this example, this last term isn't very useful.
 
 In order to go further with this project, I also implemented a PID for the speed variable. This way I fixed the desired speed to a certain level and used the measurements to calculate the required throttle so that the speed stayed in the reference level.
+
+The hyperparameters of the system were tunned manually, following the idea of the twiddle algorithm and considering the purpose of each individual term as described above. It's also important to mention that a set of parameters could work really well for low speed, but not so good for high speed. If we expect the vehicle to move fast, then we tune the parameters so that the system can react quickly. This behavior can lead to undesired oscillations at lower speeds. On the contrary, if we tune the parameters so that the system respond smooth and slower it will work well under low speeds, but won't be able to follow the reference trajectory at high speeds. The current set of parameters in the project let the vehicle stay on track for a range of speed between 20 and 50 mph. A little bit of fine tunning could make the vehicle go as fast as 80 mph probably, but it would loose control at 30 mph.
+
 
 
 ## Dependencies
