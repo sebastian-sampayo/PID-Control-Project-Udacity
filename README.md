@@ -1,7 +1,7 @@
 # PID Control Project
 In this project I implemented a PID controller to maneuver an autonomous driving car around a track in a simulator.
 The code is written in C++, because this language provides great performance in terms of memory and speed.
-This work is part of the Self-Driving Car Engineer Nanodegree Program.
+This work is part of the Self-Driving Car Engineer Nanodegree Program at Udacity.
 
 ---
 
@@ -17,7 +17,7 @@ This work is part of the Self-Driving Car Engineer Nanodegree Program.
 
 [A video of the results at 30mph can be found in YouTube in this link.](https://youtu.be/mEsy4CJ_jdI)
 
-[While another video of the results at 50mph can be found in YouTube in this link.](https://youtu.be/MwPmdJab8Ek)
+[While another video of the results at 50mph can be found in YouTube in this link.](https://youtu.be/eToBo4ScC6Y)
 
 ### Simulator
 In order to test the controller I used a visualization tool provided by Udacity that simulates the motion of a car around a track. The C++ program receives by telemetry the cross track error (CTE) and the measured speed of the vehicle in real time.
